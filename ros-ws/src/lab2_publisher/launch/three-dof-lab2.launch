@@ -1,0 +1,5 @@
+<launch>
+	<param name="robot_description" command="$(find xacro)/xacro $(find three_dof_planar)/urdf/3dof_planar.urdf.xacro"/>
+	<node name="lab2_publisher_node" pkg="lab2_publisher" type="lab2_publisher_node" output="screen" />
+	<node name="rviz" pkg="rviz" type="rviz" />
+</launch>
