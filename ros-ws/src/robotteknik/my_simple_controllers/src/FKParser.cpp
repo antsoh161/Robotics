@@ -15,7 +15,6 @@ void FKParser::parse(){
     this->parseJoints();
     this->parseLinks();
     this->sortLinks();
-    
 }
 
 void FKParser::parseJoints(){
@@ -29,7 +28,6 @@ void FKParser::parseJoints(){
         tmp_joint.setActuationAxis( Eigen::Vector3f(current->axis.x,
                                     current->axis.y,
                                     current->axis.z ));
-        std::cout << "Actuation axis: " << "[" << current->axis.x << ", " << current->axis.y << ", " << current->axis.z << "]\n";
         this->joints.push_back(tmp_joint);
     }
 }
@@ -95,13 +93,9 @@ HomTransform FKParser::parseTransform(std::string _jointName){
                                             jt->parent_to_joint_origin_transform.rotation.y,
                                             jt->parent_to_joint_origin_transform.rotation.z );
     
-    std::cout << "For joint :" << _jointName << std::endl;
-    std::cout << "Their quat [" << quat(0) << ", " << quat(1) << ", " << quat(2) << ", " << quat(3) << "]" << std::endl;
     HomTransform ht;
     ht.setRotationFromQuaternion(quat);
     ht.setTranslation(trans);
-    std::cout << "My quat: [" << ht.getQuaternion().transpose() << "]" << std::endl;
-    std::cout << "My RotationM: " << ht.getRotation() << std::endl << std::endl;
     tf::Quaternion quatt;
     
     Eigen::Vector4f angleAxis = ht.getAngleAxis();
@@ -111,7 +105,6 @@ HomTransform FKParser::parseTransform(std::string _jointName){
     else
         this->jv_origin.push_back(angleAxis(0)*-1);
     quatt.setRotation(tf::Vector3(angleAxis(1), angleAxis(2), angleAxis(3)), angleAxis(0));
-    std::cout << "tf quat: {" << quatt.w() << ", " << quatt.x() << ", " << quatt.y() << "," << quatt.z() << "]\n";
     return ht;
 }
 

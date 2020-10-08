@@ -36,7 +36,6 @@ void StateController::update(const ros::Time& time, const ros::Duration& period)
 
 bool StateController::init(hardware_interface::JointStateInterface* hw, 
 	      ros::NodeHandle& root_nh, ros::NodeHandle& controller_nh) {
-    this->doOnce = true;
     this->chain = Chain::fromUrdf("robot_description");
     
     std::vector<std::string> jointNames = hw->getNames();
