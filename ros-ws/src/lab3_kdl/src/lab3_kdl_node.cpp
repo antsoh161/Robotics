@@ -31,7 +31,7 @@ void Lab3Node::buildTree(std::string urdfParam){
     this->q_dot.resize(n);
     this->jac.resize(n);
 }
-
+/*because tf::transformKDLToTF is deprecated*/
 void Lab3Node::kdlToTF(KDL::Frame &f, tf::Transform &t){
     geometry_msgs::Transform t_msg;
     tf::transformKDLToMsg(f, t_msg);
