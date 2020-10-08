@@ -41,7 +41,7 @@ private:
 public:
     void buildTree(std::string urdfParam);
     void js_callback(const sensor_msgs::JointState::ConstPtr &js_msg );
-    void ik_service();
+    void ik_service_callback(); /* Take what parameters?*/
     void kdlToTF(KDL::Frame &f, tf::Transform &t);
     void publishTransform(tf::Transform t, std::string frame, std::string child);
     void initSolvers();

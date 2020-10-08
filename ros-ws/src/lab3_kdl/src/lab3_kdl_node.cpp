@@ -2,7 +2,7 @@
 
 Lab3Node::Lab3Node() :
     js_sub(this->nh.subscribe("joint_states", 1, &Lab3Node::js_callback, this)),
-        ik_service(this->nh.advertiseService("lab3_ik", Lab3Node::))
+    ik_service(this->nh.advertiseService("lab3_ik", &Lab3Node::ik_service_callback, this)), /*Take what parameters? */
     FKSolver_handle(NULL),
     jacSolver_handle(NULL)
 {
@@ -63,6 +63,13 @@ void Lab3Node::initSolvers(){
     delete this->jacSolver_handle;
     this->FKSolver_handle = new KDL::ChainFkSolverPos_recursive(this->chain);
     this->jacSolver_handle = new KDL::ChainJntToJacSolver(this->chain);
+}
+
+/*Take what parameters?*/
+void Lab3Node::ik_service_callback(){
+    
+    /*Solve with this->iksolver..*/
+    
 }
 
 
