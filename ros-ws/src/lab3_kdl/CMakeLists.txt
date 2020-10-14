@@ -10,27 +10,31 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   tf
   tf_conversions
+  eigen_conversions
   visualization_msgs
   std_msgs
+  message_generation
   geometry_msgs
   sensor_msgs
 )
 
 # find_package(Boost REQUIRED COMPONENTS system)
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES lab3_kdl
-  CATKIN_DEPENDS kdl_parser roscpp tf tf_conversions visualization_msgs
-  #DEPENDS system_lib
-)
-
 add_service_files(FILES
     lab3ik.srv
 )
 
-
-
+generate_messages(DEPENDENCIES
+    std_msgs
+    geometry_msgs
+    sensor_msgs
+)
+catkin_package(
+  INCLUDE_DIRS include
+  LIBRARIES lab3_kdl
+  CATKIN_DEPENDS kdl_parser roscpp tf tf_conversions eigen_conversions visualization_msgs
+  #DEPENDS system_lib
+)
 
 ###########
 ## Build ##
@@ -57,6 +61,7 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 add_executable(${PROJECT_NAME}_node src/lab3_kdl_node.cpp)
+#add_executable(${PROJECT_NAME}_client src/lab3_client.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -72,3 +77,6 @@ add_executable(${PROJECT_NAME}_node src/lab3_kdl_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node
   ${catkin_LIBRARIES}
 )
+#target_link_libraries({PROJECT_NAME}_client
+#    ${catkin_LIBRARIES}
+#)
