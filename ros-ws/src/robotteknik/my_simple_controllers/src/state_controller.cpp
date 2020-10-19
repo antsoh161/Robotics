@@ -1,5 +1,5 @@
 #include<my_simple_controllers/state_controller.h>
-#include <pluginlib/class_list_macros.h>  // to allow the controller to be loaded as a plugin
+  // to allow the controller to be loaded as a plugin
 
 namespace my_simple_controllers {
 
@@ -53,7 +53,6 @@ void StateController::publishTransform(tf::Transform t, std::string frame_id, st
 }
 
 }
-
 // make the controller available to the library loader
 PLUGINLIB_EXPORT_CLASS(my_simple_controllers::StateController,
                        controller_interface::ControllerBase)

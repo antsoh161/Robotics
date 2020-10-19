@@ -11,6 +11,7 @@
 #include <urdf_parser/urdf_parser.h>
 #include <urdf/model.h>
 #include <tf/transform_broadcaster.h>
+#include <pluginlib/class_list_macros.h>
 
 namespace my_simple_controllers {
 

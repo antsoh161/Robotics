@@ -61,7 +61,7 @@ void Lab2PubNode::updateCallback(const ros::TimerEvent&){
         //_nh.publishTransform(tf_be, "world", "endeffect");
     
 }
-
+/* Manual description of a scara robot*/
 void scaraUnitTest(){
     double l0, l1, l2, l3;
     l0 = 0.5;
