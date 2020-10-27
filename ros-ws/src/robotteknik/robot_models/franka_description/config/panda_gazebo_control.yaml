@@ -2,6 +2,17 @@ joint_state_controller:
     type: joint_state_controller/JointStateController
     publish_rate: 50
 
+my_nullspace_controller:
+    type: my_simple_controllers/NullSpaceController
+    joints:
+        - panda_joint1
+        - panda_joint2
+        - panda_joint3
+        - panda_joint4
+        - panda_joint5
+        - panda_joint6
+        - panda_joint7
+    
 position_joint_trajectory_controller:
     type: effort_controllers/JointTrajectoryController
     joints:

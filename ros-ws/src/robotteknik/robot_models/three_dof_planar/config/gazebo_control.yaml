@@ -8,6 +8,9 @@ my_state_controller:
 my_velocity_controller:
     type: my_simple_controllers/VelocityController
 
+my_nullspace_controller:
+    type: my_simple_controllers/NullSpaceController
+
 position_joint_trajectory_controller:
     type: velocity_controllers/JointTrajectoryController
     joints:

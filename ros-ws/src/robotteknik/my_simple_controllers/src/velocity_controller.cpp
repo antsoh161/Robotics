@@ -69,6 +69,8 @@ bool VelocityController::init(hardware_interface::VelocityJointInterface* hw,
     this->nr_joints = this->names.size();
     this->q.resize(this->nr_joints);
     
+    std::cout << "Joints nr " << this->nr_joints << std::endl;
+    
     for(int i = 0; i < this->nr_joints; i++){
         this->js_handles.push_back(hw->getHandle(this->names[i]) );
         this->q(i) = this->js_handles[i].getPosition();

@@ -15,4 +15,11 @@
           Simple forward velocity controller
       </description>
   </class>
+  <class name="my_simple_controllers/NullSpaceController"
+         type="my_simple_controllers::NullSpaceController"
+         base_class_type="controller_interface::ControllerBase">
+      <description>
+          Null space controller
+      </description>
+  </class>
 </library>

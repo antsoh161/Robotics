@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   urdf
   urdf_parser_plugin
 )
+find_package(orocos_kdl)
 
 
 catkin_package(
@@ -43,6 +44,8 @@ include_directories(
 add_library(${PROJECT_NAME}
   src/state_controller.cpp
   src/velocity_controller.cpp
+  src/nullspace_controller.cpp
+  src/chainjnttojacdotsolver.cpp
   src/joint.cpp
   src/chain.cpp
   src/link.cpp
@@ -52,6 +55,7 @@ add_library(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
 		     ${catkin_LIBRARIES}
+                     ${orocos_kdl_LIBRARIES}
 )
 
 

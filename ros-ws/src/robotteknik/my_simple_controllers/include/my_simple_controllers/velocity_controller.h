@@ -22,6 +22,7 @@
 #include <eigen3/Eigen/Core>
 #include <controller_interface/controller.h>
 #include <hardware_interface/joint_command_interface.h>
+#include <hardware_interface/force_torque_sensor_interface.h>
 #include <kdl/chain.hpp>
 #include <kdl/tree.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
@@ -30,6 +31,7 @@
 #include <urdf_parser/urdf_parser.h>
 #include <urdf/model.h>
 #include <tf/transform_broadcaster.h>
+
 
 namespace my_simple_controllers {
 
@@ -56,7 +58,6 @@ namespace my_simple_controllers {
         
         std::vector<hardware_interface::JointHandle> js_handles;
         std::vector<std::string> names;
-        
         int nr_joints;
         double p_gain;        
 
