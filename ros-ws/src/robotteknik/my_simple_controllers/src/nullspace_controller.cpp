@@ -40,8 +40,10 @@ void NullSpaceController::update(const ros::Time& time, const ros::Duration& per
     //this->computeControl3D();
     
     torque_out = this->computePositionControl();
-    torque_out += this->computeOrientationControl();
-    torque_out += this->computeNullSpaceControl();
+    if(oriOn == 0)
+        torque_out += this->computeOrientationControl();
+    if(nullOn == 0)
+        torque_out += this->computeNullSpaceControl();
     
     
     /*Experiment*/
@@ -67,7 +69,12 @@ bool NullSpaceController::init(hardware_interface::EffortJointInterface* hw, ros
   
     buildTree("robot_description");
      this->cmd_sub = root_nh.subscribe("command",10, &NullSpaceController::cmd_callback, this);
+     this->null_sub = root_nh.subscribe("null",1, &NullSpaceController::null_callback,this);
+     this->ori_sub = root_nh.subscribe("ori",1, &NullSpaceController::ori_callback, this);
     
+     nullOn = 1;
+     oriOn = 0;
+     
      /*From urdf, cant find in kdl tree */
     joint_limits.push_back(JointLimit(2.90, -2.90));
     joint_limits.push_back(JointLimit(1.76, -1.76));
@@ -87,11 +94,17 @@ bool NullSpaceController::init(hardware_interface::EffortJointInterface* hw, ros
     
     
     
+    
     every_100th = 0;
     
     this->joint_names = hw->getNames();
     this->nr_joints = this->joint_names.size();
     this->nr_segments = chain.getNrOfSegments();
+
+    null_signal.resize(nr_joints);
+    for(int i = 0; i < nr_joints; i++){
+        null_signal[i] = torque_limits[i];
+    }
     
     /* Pointer initalizations*/
     joint_handles.reset(new hardware_interface::JointHandle[nr_joints]);
@@ -261,7 +274,7 @@ Eigen::VectorXd NullSpaceController::computeNullSpaceControl(){
     mass_xee = jac_p* kdl_massMatrix.data.inverse() * jac_p.transpose();
     mass_xee = mass_xee.inverse();
     
-    double Kp_null = 3.0;
+    double Kp_null = 5.0;
     
     /*Choosing this ??*/
     Eigen::VectorXd torque_null_signal = Eigen::VectorXd::Zero(nr_joints);
@@ -273,6 +286,7 @@ Eigen::VectorXd NullSpaceController::computeNullSpaceControl(){
     
     //torque_null_signal = Kp_null*(random_null.data - qs.q.data);
     torque_null_signal = Kp_null*(random_null.data);
+  
     
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(nr_joints, nr_joints);
     
@@ -287,19 +301,6 @@ Eigen::VectorXd NullSpaceController::computeNullSpaceControl(){
 }
 
 void NullSpaceController::cmd_callback(const geometry_msgs::Twist::ConstPtr& cmd_msg){
-    //x_des.resize(3);
-    /*
-    this->x_des6D(0) = cmd_msg->linear.x;
-    this->x_des6D(1) = cmd_msg->linear.y;
-    this->x_des6D(2) = cmd_msg->linear.z;
-    this->x_des6D(3) = cmd_msg->angular.x;
-    this->x_des6D(4) = cmd_msg->angular.y;
-    this->x_des6D(5) = cmd_msg->angular.z;
-    this->x_des3D(0) = cmd_msg->linear.x;
-    this->x_des3D(1) = cmd_msg->linear.y;
-    this->x_des3D(2) = cmd_msg->linear.z;
-    */
-    
     this->x_des(0) = cmd_msg->linear.x;
     this->x_des(1) = cmd_msg->linear.y;
     this->x_des(2) = cmd_msg->linear.z;
@@ -310,6 +311,31 @@ void NullSpaceController::cmd_callback(const geometry_msgs::Twist::ConstPtr& cmd
     setDesiredTF();
             
 }
+
+void NullSpaceController::null_callback(const std_msgs::Int16ConstPtr& null_msg){
+    this->nullOn = null_msg->data;
+}
+
+void NullSpaceController::ori_callback(const std_msgs::Int16ConstPtr& ori_msg){
+    this->oriOn = ori_msg->data;
+}
+
+void NullSpaceController::incrementTorqueNull(){
+    
+    double steps = 100; // 1 [Nm]
+    double lambda;
+    
+    for(int i = 0; i < nr_joints; i++){
+        lambda = (torque_limits[i]);
+        lambda /= steps;
+        
+        if(lambda > torque_limits[i])
+            null_signal[i] = 0;
+        null_signal[i] += lambda;
+    }
+    
+}
+
 
 void NullSpaceController::randomJointArray(KDL::JntArray& ja){
     double safety_diff = 0.5;

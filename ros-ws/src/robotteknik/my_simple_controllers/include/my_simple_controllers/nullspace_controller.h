@@ -16,6 +16,7 @@
 
 #include <random>
 #include <ros/ros.h>
+#include <std_msgs/Int16.h>
 #include <random>
 #include <tf/transform_broadcaster.h>
 #include <tf_conversions/tf_kdl.h>
@@ -51,9 +52,13 @@ namespace my_simple_controllers {
         int nr_joints;
         int nr_segments;
         int every_100th;
+        int nullOn;
+        int oriOn;
         double dt;
         std::vector<std::string> joint_names;
         ros::Subscriber cmd_sub;
+        ros::Subscriber null_sub;
+        ros::Subscriber ori_sub;
         
         
         KDL::Tree tree;
@@ -84,6 +89,7 @@ namespace my_simple_controllers {
         Eigen::VectorXd torque_out;
         Eigen::VectorXd torque_null;
         Eigen::VectorXd joint_origins;
+        Eigen::VectorXd null_signal;
         
         Eigen::VectorXd p_gains;
         Eigen::VectorXd d_gains;
@@ -128,9 +134,12 @@ namespace my_simple_controllers {
         
         void setDesiredTF();
         void publishTransform(tf::Transform t, std::string frame_id, std::string child_frame);
-        
         double doubleRand(double a, double b);
+        
         void cmd_callback(const geometry_msgs::Twist::ConstPtr& cmd_msg);
+        void null_callback(const std_msgs::Int16ConstPtr& null_msg);
+        void ori_callback(const std_msgs::Int16ConstPtr& ori_msg);
+        
         virtual void update(const ros::Time& time, const ros::Duration& period);
 
         //initialize controller with access to hardware interface and node handles

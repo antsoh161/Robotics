@@ -118,7 +118,6 @@ void Lab3Node::initSolvers(){
 bool Lab3Node::ik_service_callback(lab3_kdl::lab3ikRequest &req, lab3_kdl::lab3ikResponse &res){
     ROS_INFO("service callback..");
     
-    
     tf::Transform wanted_tf;
     tf::poseMsgToTF(req.pose,wanted_tf);
     this->publishTransform(wanted_tf, "world", "desired_pose");
@@ -128,6 +127,7 @@ bool Lab3Node::ik_service_callback(lab3_kdl::lab3ikRequest &req, lab3_kdl::lab3i
     std::cout << "Guessed joints" << std::endl;
     /*Find segment of req.frame_id*/
     int segmentNrOfDesiredFrame = this->findSegmentNr(req.frame_id);
+    segmentNrOfDesiredFrame++;
     
     if(segmentNrOfDesiredFrame < 0){
         ROS_ERROR("SegmentNr: %d, Requested frame does not exist in chain, did you enter a joint?", segmentNrOfDesiredFrame);
@@ -176,15 +176,15 @@ bool Lab3Node::ik_service_callback(lab3_kdl::lab3ikRequest &req, lab3_kdl::lab3i
     
     /*Loop starts here*/
     int counter = 0;
-    while(counter < 100){
+    while(counter < 200){
         this->publishTransform(tf_guess, "world", "guess");
         this->publishTransform(wanted_tf, "world", "desired_pose");
         
-        this->jacSolver_handle->JntToJac(q_guess, jac_guess, segmentNrOfDesiredFrame);
-        this->jacDLSinv(jac_guess, jac_pinv, 0.5);
+        this->jacSolver_handle->JntToJac(q_guess, jac_guess);
+        this->jacDLSinv(jac_guess, jac_pinv, 0.01);
         q_guess.data = q_guess.data + lambda*jac_pinv*v;
         
-        this->FKSolver_handle->JntToCart(q_guess, frame_guess, segmentNrOfDesiredFrame);
+        this->FKSolver_handle->JntToCart(q_guess, frame_guess);
         this->kdlToEigen(frame_guess, eigen_guess);
         
         eigen_minimalTransform = eigen_guess.inverse() * eigen_desired; /* Bring guess frame onto desired frame */
@@ -217,7 +217,7 @@ bool Lab3Node::ik_service_callback(lab3_kdl::lab3ikRequest &req, lab3_kdl::lab3i
         this->js_pub.publish(js_out);
         
         counter++;
-        ros::Duration(0.2).sleep();
+        ros::Duration(0.1).sleep();
     }
     
     std::cout << "Lowest norm: " << lowest_norm << std::endl;
@@ -240,7 +240,7 @@ bool Lab3Node::ik_service_callback(lab3_kdl::lab3ikRequest &req, lab3_kdl::lab3i
 
 void Lab3Node::jacDLSinv(KDL::Jacobian j, Eigen::MatrixXd &j_pinv, double k_factor){
     j_pinv = j.data*j.data.transpose();
-    j_pinv += k_factor * k_factor * Eigen::MatrixXd::Identity(j_pinv.rows(), j_pinv.cols()); //j_pinv.Identity(j_pinv.rows(), j_pinv.cols());
+    j_pinv += k_factor * Eigen::MatrixXd::Identity(j_pinv.rows(), j_pinv.cols()); //j_pinv.Identity(j_pinv.rows(), j_pinv.cols());
     j_pinv = j_pinv.inverse();
     j_pinv = j.data.transpose() * j_pinv;
 }
